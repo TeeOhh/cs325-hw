@@ -12,17 +12,24 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun map-range (fn start end)
-  (cond ((> start end) (cons (funcall fn start) (map-range fn (- start 1) end)))
-        ((< start end) (cons (funcall fn start) (map-range fn (+ start 1) end)))
-        (t ())
-        ))
+  (if (> start end)
+      (map-range-helper fn start end '-)
+      (map-range-helper fn start end '+)))
+
+(defun map-range-helper (fn start end sub-add)
+  (if (= start end)
+      '()
+      (cons (funcall fn start) (map-range-helper fn (funcall sub-add start 1) end sub-add))))
 
 (defun find-range (fn start end)
-   (cond ((= start end) nil)
+   (if (> start end)
+      (find-range-helper fn start end '-)
+      (find-range-helper fn start end '+)))
+
+(defun find-range-helper (fn start end sub-add)
+  (cond ((= start end) nil)
          ((funcall fn start) start)
-         ((> start end) (find-range fn (- start 1) end))
-         (t (find-range fn (+ start 1) end)))
-   )
+         (t (find-range-helper fn (funcall sub-add start 1) end))))
 
 (defun every-range (fn start end)
     (cond ((= start end) t)
