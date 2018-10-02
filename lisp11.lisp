@@ -6,9 +6,6 @@
 ;;;;   Created: October 2, 2018 08:02:46
 ;;;;   Purpose: map-range, every-range, find-range, reduce-range
 ;;;; ---------------------------------------------------------------------------
-;;;;  $LastChangedDate: $
-;;;;  $LastChangedBy: 
-;;;; ---------------------------------------------------------------------------
 
 (in-package :cs325-user)
 
