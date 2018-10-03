@@ -35,8 +35,8 @@
     (cond ((= start end) t)
           ((funcall fn start) 
             (if (> start end)
-                (every-range fn (- start 1) end)
-                (every-range fn (+ start 1) end)
+                (every-range fn (1- start) end)
+                (every-range fn (1+ start) end)
             ))
           (t nil)
         )
@@ -44,8 +44,8 @@
 
 (defun reduce-range (fn start end &optional init)
     (cond ((= start end ) init)
-          ((> start end) (reduce-range fn (- start 1) end (funcall fn init start)))
-          (t (reduce-range fn (+ start 1) end (funcall fn init start)))
+          ((> start end) (reduce-range fn (1- start) end (funcall fn init start)))
+          (t (reduce-range fn (1+ start) end (funcall fn init start)))
         )
     )
 
