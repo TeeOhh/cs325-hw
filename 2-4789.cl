@@ -11,40 +11,51 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun greater (a b)
-	(cond ((> a b) a)
-		  (t b)))
+  (cond ((> a b) a)
+        (t b)))
 
 (defun has-list-p (alist)
-	(cond ((null alist) nil)
-		  ((listp (car alist)) t)
-		  (t (has-list-p (rest alist)))))
+  (cond ((null alist) nil)
+        ((listp (car alist)) t)
+        (t (has-list-p (rest alist)))))
 
 (defun print-dots (num)
-	(do ((x 1 (1+ x)))
-		((> x num) t)
-		(princ ".")))
+  (do ((i 1 (1+ i)))
+      ((> i num) t)
+    (princ ".")))
 
 (defun print-dots (num)
-	(princ (print-dots-helper num "")))
-
-(defun print-dots-helper (num init)
-	(cond ((= num 0) init)
-		  (t (print-dots-helper (1- num) (concatenate 'string "." init)))))
+  (when (> num 0)
+    (princ ".")
+    (print-dots (1- num))))
 
 (defun get-a-count (alist)
-	(apply #'+ (mapcar (lambda (x) (if (eql x 'a) 1 0)) alist)))
+  (do ((i 0 (1+ i))
+       (cur alist (rest cur))
+       (a-count 0 (if (eql (first cur) 'a)
+                    (1+ a-count)
+                    a-count)))
+      ((= i (length alist)) a-count)))
 
 (defun get-a-count (alist)
-	(cond ((null alist) 0)
-		  ((eql (first alist) 'a) (1+ (get-a-count (rest alist))))
-		  (t (get-a-count (rest alist)))))
+  (cond ((null alist) 0)
+        ((eql (first alist) 'a) (1+ (get-a-count (rest alist))))
+        (t (get-a-count (rest alist)))))
+
+;; The "remove nil lst" portion will return a version of the list with
+;; nil removed, it will not save over the passed in lst. If instead
+;; he were to nest the remove inside the apply, it would work.
 
 (defun summit (alist)
-	(apply #'+ (mapcar (lambda (x) (if x x 0)) alist)))
+  (apply #'+ (mapcar (lambda (x) (if x x 0)) alist)))
+
+;; He never checks to see when the lst is empty (no base case),
+;; so the recursion will go on forever. Taking the cdr
+;; of '() and then "nil" forever on.
 
 (defun summit (alist)
-	(cond ((null alist) 0)
-		  ((null (first alist)) (summit (rest alist)))
-		  (t (+ (first alist) (summit (rest alist))))))
+  (cond ((null alist) 0)
+        ((null (first alist)) (summit (rest alist)))
+        (t (+ (first alist) (summit (rest alist))))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
