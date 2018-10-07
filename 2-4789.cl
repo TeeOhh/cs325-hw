@@ -32,10 +32,8 @@
 (defun get-a-count (alist)
   (do ((i 0 (1+ i))
        (cur alist (rest cur))
-       (a-count 0 (if (eql (first cur) 'a)
-                    (1+ a-count)
-                    a-count)))
-      ((= i (length alist)) a-count)))
+       (sum 0 (if (eql (first cur) 'a) (1+ sum) sum)))
+      ((= i (length alist)) sum)))
 
 (defun get-a-count (alist)
   (cond ((null alist) 0)

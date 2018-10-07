@@ -12,44 +12,28 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun map-range (fn start end)
-  (if (> start end)
-    (map-range-helper fn start end '-)
-    (map-range-helper fn start end '+)))
-
-(defun map-range-helper (fn start end sub-add)
-  (if (= start end)
-    '()
-    (cons (funcall fn start) (map-range-helper fn (funcall sub-add start 1) end sub-add))))
+  (do ((increment (if (> start end) #'1- #'1+))
+       (i start (funcall increment i))
+       (lst '() (cons (funcall fn i) lst)))
+      ((= i end) (reverse lst))))
 
 (defun find-range (fn start end)
-  (if (> start end)
-    (find-range-helper fn start end '-)
-    (find-range-helper fn start end '+)))
-
-(defun find-range-helper (fn start end sub-add)
-  (cond ((= start end) nil)
-        ((funcall fn start) start)
-        (t (find-range-helper fn (funcall sub-add start 1) end sub-add))))
-
+  (do ((increment (if (> start end) #'1- #'1+))
+       (i start (funcall increment i)))
+      ((= i end) nil)
+    (when (funcall fn i) (return i))))
+    
 (defun every-range (fn start end)
-  (if (> start end)
-    (every-range-helper fn start end '-)
-    (every-range-helper fn start end '+)))
-
-(defun every-range-helper (fn start end sub-add)
-  (cond ((= start end) t)
-        ((funcall fn start) (every-range-helper fn (funcall sub-add start 1) end sub-add)) 
-        (t nil)))
+  (do ((increment (if (> start end) #'1- #'1+))
+       (i start (funcall increment i)))
+      ((= i end) t)
+    (unless (funcall fn i) (return nil))))
 
 (defun reduce-range (fn start end &optional init)
-  (if (> start end)
-    (reduce-range-helper fn start end '- init)
-    (reduce-range-helper fn start end '+ init)))
-
-(defun reduce-range-helper (fn start end sub-add &optional init)
-  (if (= start end)
-    init
-    (reduce-range-helper fn (funcall sub-add start 1) end sub-add (funcall fn init start))))
+  (do ((increment (if (> start end) #'1- #'1+))
+       (i start (funcall increment i))
+       (val init (funcall fn val i)))
+      ((= i end) val)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
