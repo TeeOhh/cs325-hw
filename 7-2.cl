@@ -10,15 +10,13 @@
 (in-package :cs325-user)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun map-stream (fn stream)
-  (loop for expr = (read stream nil stream)
-      until (streamp expr)
+(defun map-stream (fn in)
+  (loop for expr = (read in nil in)
+      until (eql exp stream)
         do (funcall fn expr)))
 
 (defun map-file (fn pathname)
-  (with-open-file (stream pathname)
-    (loop for expr = (read stream nil stream)
-      until (streamp expr)
-        do (funcall fn expr))))
+  (with-open-file (in pathname)
+    (map-stream fn in)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code

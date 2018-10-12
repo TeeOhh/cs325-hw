@@ -12,26 +12,26 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun map-range (fn start end)
-  (do ((increment (if (> start end) #'1- #'1+))
-       (i start (funcall increment i))
+  (do ((increment (if (> start end) -1 1))
+       (i start (+ increment i))
        (lst '() (cons (funcall fn i) lst)))
       ((= i end) (reverse lst))))
 
 (defun find-range (fn start end)
-  (do ((increment (if (> start end) #'1- #'1+))
-       (i start (funcall increment i)))
-      ((= i end) nil)
-    (when (funcall fn i) (return i))))
-    
+  (let ((increment (if (> start end) -1 1)) (i start))
+    (cond ((= i end) nil)
+          ((funcall fn i) i)
+          (t (find-range fn (+ start increment) end)))))
+
 (defun every-range (fn start end)
-  (do ((increment (if (> start end) #'1- #'1+))
-       (i start (funcall increment i)))
-      ((= i end) t)
-    (unless (funcall fn i) (return nil))))
+  (let ((increment (if (> start end) -1 1)) (i start))
+    (cond ((= i end) t)
+          ((not (funcall fn i)) nil)
+          (t (every-range fn (+ start increment) end)))))
 
 (defun reduce-range (fn start end &optional init)
-  (do ((increment (if (> start end) #'1- #'1+))
-       (i start (funcall increment i))
+  (do ((increment (if (> start end) -1 1))
+       (i start (+ increment i))
        (val init (funcall fn val i)))
       ((= i end) val)))
 
