@@ -18,11 +18,10 @@
       ((= i end) (reverse lst))))
 
 (defun find-range (fn start end)
-  (let ((increment (if (> start end) -1 1)) (i start))
-    (cond ((= i end) nil)
-          ((funcall fn i) i)
-          (t (find-range fn (+ start increment) end)))))
-
+  (do ((increment (if (> start end) -1 1))
+       (i start (+ increment i)))
+      ((= i end) nil (funcall fn i) i)))
+       
 (defun every-range (fn start end)
   (let ((increment (if (> start end) -1 1)) (i start))
     (cond ((= i end) t)
