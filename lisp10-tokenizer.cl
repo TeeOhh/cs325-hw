@@ -20,7 +20,22 @@
 (defmethod next-token-p ((tok tokenizer))
   (> (length (tokenizer-cur tok)) 0))
 
+
 (defmethod next-token ((tok tokenizer))
+  ;;if delim = space, remove leading spaces
+  
+  ;;if not next-token-p return
+  
+  ;;set return-string = ""
+  ;;while (subseq tokenizer-cur 0 1) not = delim and next-token-p, build return-string)
+  
+  ;;if delim = space, remove leading spaces again
+  ;;else remove just one delim
+    ;;if not next-token-p, set tokenizer-cur = delim
+  )
+  
+  
+(defmethod next-token-old ((tok tokenizer))
   (if (not (next-token-p tok))
     (return-from next-token nil))
   (loop while (string= (subseq (tokenizer-cur tok) 0 1) (tokenizer-delimeter tok))
