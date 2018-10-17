@@ -18,42 +18,32 @@
    (cur :accessor tokenizer-cur :initarg :cur)))
 
 (defmethod next-token-p ((tok tokenizer))
-  (> (length (tokenizer-cur tok)) 0))
-
+  (if (string= (tokenizer-delimeter tok) #\space)
+    (progn
+      (loop while (and (not (string= (tokenizer-cur tok) "")) (string= (subseq (tokenizer-cur tok) 0 1) #\space))
+             do (setf (tokenizer-cur tok) (subseq (tokenizer-cur tok) 1)))
+      (not (string= (tokenizer-cur tok) "")))
+    (not (null (tokenizer-cur tok)))))
 
 (defmethod next-token ((tok tokenizer))
-  ;;if delim = space, remove leading spaces
-  
-  ;;if not next-token-p return
-  
-  ;;set return-string = ""
-  ;;while (subseq tokenizer-cur 0 1) not = delim and next-token-p, build return-string)
-  
-  ;;if delim = space, remove leading spaces again
-  ;;else remove just one delim
-    ;;if not next-token-p, set tokenizer-cur = delim
-  )
-  
-  
-(defmethod next-token-old ((tok tokenizer))
-  (if (not (next-token-p tok))
-    (return-from next-token nil))
-  (loop while (string= (subseq (tokenizer-cur tok) 0 1) (tokenizer-delimeter tok))
-      do (setf (tokenizer-cur tok) (subseq (tokenizer-cur tok) 1)))
-  (let ((return-token nil))
-    (setf return-token (subseq (tokenizer-cur tok) 0 (position (tokenizer-delimeter tok) (tokenizer-cur tok))))
-    (if (null return-token)
-      (progn (setf return-token (tokenizer-cur tok)) (setf (tokenizer-cur tok) ""))
-      (setf (tokenizer-cur tok) (subseq (tokenizer-cur tok) (position (tokenizer-delimeter tok) (tokenizer-cur tok)))))
-    return-token))
+  (when (string= (tokenizer-delimeter tok) #\space)
+    (loop while (and (next-token-p tok) (string= (subseq (tokenizer-cur tok) 0 1) #\space))
+        do (setf (tokenizer-cur tok) (subseq (tokenizer-cur tok) 1))))
+  (unless (next-token-p tok) (return-from next-token nil))
+  (let ((return-string ""))
+    (loop while (and (not (string= (tokenizer-cur tok) "")) (not (string= (subseq (tokenizer-cur tok) 0 1) (tokenizer-delimeter tok))))
+          do (setf return-string (concatenate 'string return-string (subseq (tokenizer-cur tok) 0 1)))
+          (setf (tokenizer-cur tok) (subseq (tokenizer-cur tok) 1)))
+    (cond ((not (next-token-p tok)) (return-from next-token return-string))
+          ((string= (tokenizer-delimeter tok) #\space) 
+           (loop while (and (next-token-p tok) (string= (subseq (tokenizer-cur tok) 0 1) #\space))
+                  do (setf (tokenizer-cur tok) (subseq (tokenizer-cur tok) 1))))
+          (t (setf (tokenizer-cur tok) (if (string= (tokenizer-cur tok) "") nil (subseq (tokenizer-cur tok) 1)))))
+    return-string))
+
 
 (defun make-tokenizer (string &optional (delimeter #\space))
   (setf obj (make-instance 'tokenizer :string string :delimeter delimeter :cur string)))
-
-(defun split-string (str &optional (delim #\space))
-  (let ((tr (make-tokenizer str delim)))
-    (do ((l nil (cons (next-token tr) l)))
-      ((not (next-token-p tr)) (nreverse l)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
