@@ -19,21 +19,14 @@
     nil
     (let ((path (car queue)))
       (let ((node (car path)))
-        (if (eql node end)
-          (reverse path)
-          (bfs end
-                
-               (append (cdr queue)
-                       (new-paths path node net end))
-               net))))))
+        (bfs end (append (cdr queue) (new-paths path node net end)) net)))))
 
 (defun new-paths (path node net end)
-  (let ((new-path (mapcar #'(lambda (n)
+  (mapcan #'(lambda (n)
               (cond ((eql n end) (throw 'found (reverse (cons n path))))
-                    ((not (find n path)) (cons n path))
-                    (t (values))))
-                    (cdr (assoc node net)))))
-    new-path))
+                    ((not (member n path)) (list (cons n path)))
+                    (t nil)))
+    (cdr (assoc node net))))
 
 
 
@@ -47,25 +40,17 @@
   (if (empty-queue-p queue)
     nil
     (let ((path (car queue)))
-      (let ((node (car path)))
-        (if (eql node end)
-          (reverse path)
-          (bfs end
-               (let ((new-path (new-paths path node net end)))
-                 (loop for path-cur in new-path
-                       do (when (find end path-cur) (return-from bfs path-cur)))
-                   (append (cdr queue)
-                       new-path))
-               net))))))
-
+      (let* ((node (car path)) (paths-to-add (new-paths path node net end)))
+        (if (member end paths-to-add)
+          paths-to-add
+          (bfs end (append (cdr queue) paths-to-add) net))))))
 
 (defun new-paths (path node net end)
-  (let ((new-path (mapcar #'(lambda (n)
-              (cond ((eql n end) (reverse (cons n path)))
-                    ((not (find n path)) (cons n path))
-                    (t (values))))
-                    (cdr (assoc node net)))))
-    new-path))
+  (mapcan #'(lambda (n)
+              (cond ((eql n end) (return-from new-paths (reverse (cons n path))))
+                    ((not (member n path)) (list (cons n path)))
+                    (t nil)))
+    (cdr (assoc node net))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
