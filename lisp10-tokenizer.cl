@@ -21,11 +21,25 @@
   (not (null (tokenizer-cur tok))))
 
 (defmethod next-token ((tok tokenizer))
+  ;;find start next token (based on end of cur token)
+  ;;find end of next token (based on start of it)
+  ;;if token found, set tokenizer-cur to this token. Else set as nil
+  (get-start-end tok)
   )
 
 
 (defun make-tokenizer (string &optional (delimiter #\space))
-  (setf obj (make-instance 'tokenizer :string string :delimiter delimiter :cur string)))
+  (setf obj (make-instance 'tokenizer :string string :delimiter delimiter :cur (list 0 (length string))))
+  
+  ;;call next-token once to initialize pointer
+  )
+
+(defun get-start-end ((tok tokenizer))
+  (if (string= (tokenizer-delimeter tok) #\space)
+    (position-if-not (lambda (x) (string= x (tokenizer-delimeter tok))) (tokenizer-string tok))
+    ;;else, can't return nil of nothing but delimeters found
+    'test
+    ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
