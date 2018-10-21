@@ -20,13 +20,12 @@
 (defun find-range (fn start end)
   (do ((increment (if (> start end) -1 1))
        (i start (+ increment i)))
-      ((= i end) nil (funcall fn i) i)))
+      ((or (= i end) (funcall fn i)) (if (= i end) nil i))))
        
 (defun every-range (fn start end)
-  (let ((increment (if (> start end) -1 1)) (i start))
-    (cond ((= i end) t)
-          ((not (funcall fn i)) nil)
-          (t (every-range fn (+ start increment) end)))))
+  (do ((increment (if (> start end) -1 1))
+       (i start (+ increment i)))
+      ((or (= i end) (not (funcall fn i))) (= i end))))
 
 (defun reduce-range (fn start end &optional init)
   (do ((increment (if (> start end) -1 1))
