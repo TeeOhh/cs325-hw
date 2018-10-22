@@ -13,7 +13,7 @@
 
 (defclass tokenizer ()
   ((string :accessor tokenizer-string :initarg :string)
-   (delimeter :accessor tokenizer-delimeter
+   (delimeter :accessor tokenizer-delimiter
               :initarg :delimiter)
    (cur :accessor tokenizer-cur :initarg :cur)))
 
@@ -21,25 +21,30 @@
   (not (null (tokenizer-cur tok))))
 
 (defmethod next-token ((tok tokenizer))
-  ;;find start next token (based on end of cur token)
-  ;;find end of next token (based on start of it)
-  ;;if token found, set tokenizer-cur to this token. Else set as nil
-  (get-start-end tok)
-  )
-
+  (let ((cur (tokenizer-cur tok)) (delim (tokenizer-delimiter tok)) (string (tokenizer-string tok)))
+    (setf (tokenizer-cur tok) (get-start-end cur delim string))
+    (subseq string (first cur) (second cur))))
 
 (defun make-tokenizer (string &optional (delimiter #\space))
-  (setf obj (make-instance 'tokenizer :string string :delimiter delimiter :cur (list 0 (length string))))
-  
-  ;;call next-token once to initialize pointer
-  )
+  (setf obj (make-instance 'tokenizer :string string :delimiter delimiter 
+              :cur (get-start-end (list -1 -1) delimiter string))))
 
-(defun get-start-end ((tok tokenizer))
-  (if (string= (tokenizer-delimeter tok) #\space)
-    (position-if-not (lambda (x) (string= x (tokenizer-delimeter tok))) (tokenizer-string tok))
-    ;;else, can't return nil of nothing but delimeters found
-    'test
-    ))
+(defun get-start-end (cur delim string)
+  (let ((start (get-start delim string cur)))
+    (if (or (not start) (eql start (1+ (length string))))
+      nil
+      (list start (get-end start delim string)))))
+
+(defun get-start (delimiter string current)
+  (if (string= delimiter #\space)
+    (position-if-not (lambda (x) (string= x delimiter)) string :start (1+ (second current)))
+    (1+ (second current))))
+
+(defun get-end (start delimiter string)
+  (let ((end (position delimiter string :start start)))
+    (if end end (length string))))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
