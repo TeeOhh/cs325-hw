@@ -12,9 +12,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defmacro nth-expr (n &rest args)
-  (let ((arg `(nth (1- ,n) (list ,@args))))
-    arg))
-  ;;`(nth (1- ,n) (list ,@args)))
+    `(nth ,n (list ,@args)))
 
 (defmacro n-of (n expr)
   )
