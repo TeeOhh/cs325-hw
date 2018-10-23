@@ -11,22 +11,22 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun shortest-path (start end net)
-  (catch 'found (bfs end (list (list start)) net)))
-
-(defun bfs (end queue net)
-  (if (empty-queue-p queue)
-    nil
-    (let ((path (car queue)))
-      (let ((node (car path)))
-        (bfs end (append (cdr queue) (new-paths path node net end)) net)))))
-
-(defun new-paths (path node net end)
-  (mapcan #'(lambda (n)
-              (cond ((eql n end) (throw 'found (reverse (cons n path))))
-                    ((not (member n path)) (list (cons n path)))
-                    (t nil)))
-    (cdr (assoc node net))))
+;;;(defun shortest-path (start end net)
+;;;  (catch 'found (bfs end (list (list start)) net)))
+;;;
+;;;(defun bfs (end queue net)
+;;;  (if (empty-queue-p queue)
+;;;    nil
+;;;    (let ((path (car queue)))
+;;;      (let ((node (car path)))
+;;;        (bfs end (append (cdr queue) (new-paths path node net end)) net)))))
+;;;
+;;;(defun new-paths (path node net end)
+;;;  (mapcan #'(lambda (n)
+;;;              (cond ((eql n end) (throw 'found (reverse (cons n path))))
+;;;                    ((not (member n path)) (list (cons n path)))
+;;;                    (t nil)))
+;;;    (cdr (assoc node net))))
 
 
 (defun shortest-path (start end net)
@@ -36,15 +36,26 @@
   (if (empty-queue-p queue)
     nil
     (let ((path (car queue)))
-      (let ((node (car path)))
-        (do* ((path-to-add '() (car (new-paths (car assoc-list) path)))
-              (return-path '() (nconc return-path (list path-to-add)))
-              (assoc-list (cdr (assoc node net)) (rest assoc-list)))
-            ((or (null assoc-list) (member end path-to-add)) 
-             (if (member end path-to-add) (reverse path-to-add) (bfs end (append (cdr queue) return-path) net))))))))
+      (let* ((node (car path)) (neighbors (cdr (assoc node net))))
+        (if (member end neighbors)
+          (reverse (cons end path))
+          (bfs end (append (cdr queue) (new-paths path end neighbors)) net))))))
 
-(defun new-paths (item path)
-  (when (not (member item path)) (list (cons item path))))
+(defun dfs (start end net)
+  ;;for neighbor of start
+  ;;if no neighbors return nil
+  ;;if neighbor = end
+  ;;  if (length cur-path) > (length longest-path)
+  ;;     cur-path
+  ;;     longest-path
+  ;;else, recall with neighbor = start, cur-path, longest-path
+  )
+
+(defun new-paths (path end neighbors)
+  (mapcan #'(lambda (n)
+              (cond ((not (member n path)) (list (cons n path)))
+                    (t nil)))
+    neighbors))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -12,7 +12,11 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defmacro nth-expr (n &rest args)
-    `(nth ,n (list ,@args)))
+  ;;only want comma before (evaluated) nth arg of args
+  ;;(nth ,n (list ,@args))))
+  (let ((g (gensym)) (h (gensym)))
+    `(let ((,g ,n) (,h ,args))
+       (nth ,g ,@args))))
 
 (defmacro n-of (n expr)
   )
