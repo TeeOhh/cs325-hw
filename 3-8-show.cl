@@ -13,31 +13,23 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun show-dots (alist)
-  (cond ((null alist) (format t "NIL"))
-        ((atom alist) (format t "~s" alist))
+  (cond ((atom alist) (format t "~s" alist))
         (t 
          (format t "(")
-         (if (atom (car alist))
-           (format t "~s" (car alist))
-           (show-dots (car alist)))
+         (show-dots (car alist))
          (format t " . ")
          (show-dots (cdr alist))
          (format t ")"))))
 
 (defun show-list (alist)
   (cond ((atom alist) (format t "~s" alist))
-        (t (format t "[") (show-list-helper alist))))
+        (t (format t "[") (show-list (car alist))
+           (show-list-helper (cdr alist)) (format t "]"))))
 
 (defun show-list-helper (alist)
-  (cond ((null alist) (format t "]"))
-        ((atom alist) (format t ". ~s]" alist))
-        ((atom (car alist))
-         (cond ((null (cdr alist)) (format t "~s" (car alist)) (show-list-helper (cdr alist)))
-               (t (format t "~s " (car alist)) (show-list-helper (cdr alist)))))
-        (t (format t "[")
-           (show-list-helper (car alist))
-           (cond ((null (cdr alist)) (show-list-helper (cdr alist)))
-                 (t (format t " ") (show-list-helper (cdr alist)))))))
+  (cond ((null alist) nil)
+        ((atom alist) (format t " . ~s" alist))
+        (t (format t " ") (show-list (car alist)) (show-list-helper (cdr alist)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
