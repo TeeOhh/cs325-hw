@@ -13,13 +13,16 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun make-best-change (cents &optional (coins '(25 10 5 1)))
-  ;;(if null coins then '())
-  ;;(get-min (apply +' (mapcar (lambda (x) (multiple-value-setq (quotient remainder) (floor remainder x)) quotient)
-  ;;                coins)) (make-best-change cents (rest coins))
-  (let ((remainder cents))
-    (values-list (mapcar (lambda (x) (multiple-value-setq (quotient remainder) (floor remainder x)) quotient)
-                   coins)))
-  )
+  (do* ((new-coins coins (rest coins))
+       (remainder cents cents)
+       (current '() (mapcar (lambda (x) (multiple-value-setq (quotient remainder) (floor remainder x)) quotient)
+                   new-coins))
+        (best-change '() current))
+       ;;add (length of coins - new-coins) zeros to front of best-change 
+      ((null new-coins) best-change)))
+    
+(defun get-best (cur best)
+  (if (< (apply +' cur) (apply +' best)) cur best))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
