@@ -41,16 +41,6 @@
           (reverse (cons end path))
           (bfs end (append (cdr queue) (new-paths path end neighbors)) net))))))
 
-(defun dfs (start end net)
-  ;;for neighbor of start
-  ;;if no neighbors return nil
-  ;;if neighbor = end
-  ;;  if (length cur-path) > (length longest-path)
-  ;;     cur-path
-  ;;     longest-path
-  ;;else, recall with neighbor = start, cur-path, longest-path
-  )
-
 (defun new-paths (path end neighbors)
   (mapcan #'(lambda (n)
               (cond ((not (member n path)) (list (cons n path)))

@@ -12,16 +12,23 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun longest-path (start end net)
-  (dfs start end net (list start) '()))
+  (let ((longest (reverse (dfs start end net (list start) (cdr (assoc start net)) '()))))
+    (if (and (null longest) (eql start end))
+      (list start)
+      longest)))
 
-(defun dfs (start end net path longest-tracker)
-  (let ((neighbors (cdr (assoc start net))))
-    (if (null neighbors) longest-tracker
-      (loop for neighbor in neighbors
-            do (cond ((string= neighbor end) 
-                   (if (> (length (cons neighbor path)) (length longest-tracker)) (return-from dfs (cons neighbor path)) longest-tracker))
-                  ((member neighbor path) nil)
-                  (t (dfs neighbor end net (cons neighbor path) longest-tracker)))))))
+(defun dfs (start end net path neighbors longest-tracker)
+  (if (null neighbors) longest-tracker
+    (dfs start end net path (rest neighbors)
+         (get-longest (car neighbors) end path net longest-tracker))))
+
+(defun get-longest (node end path net longest-tracker)
+  (let ((new-path (cons node path)))
+    (cond ((string= node end) (if (> (length new-path) (length longest-tracker))
+                                new-path longest-tracker))
+          ((member node path) longest-tracker)
+          (t (dfs node end net new-path (cdr (assoc node net)) longest-tracker)))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
