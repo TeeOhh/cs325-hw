@@ -22,21 +22,22 @@
         (new-coins coins (rest new-coins)))
        ((null new-coins) (values-list (sparse-to-dense best-change coins)))))
 
+;at first call no-pennis with (cents - quotient * (car coins)) '() (rest coins) quotient)
+
+(defun no-pennies (cents past-coins coins shortest-tracker)
+  ;if quotient = 0 and (null cons) shortest-tracker
+  ;if quotient = 0 re-call with past-coins (rest coins)
+  ;(multiple-value-setq (quotient remainder) (floor cents (car coins))
+  ;store quotient
+  ;new = (mapcar (lambda (x) (multiple-value-setq (quotient remainder) (floor remainder x)) quotient)
+  ;(rest coins))
+  ;recall with past-coins = quotient - 1,(get-best (cons past-coins new) shortest-tracker)
+  )
+
+
 (defun get-best (cur best)
   (let ((cur-temp (apply '+ cur)) (best-temp (apply '+ best)))
     (if (< cur-temp best-temp) cur best)))
-
-(defun make-best-change-denom (cents &optional (coins '(25 10 5 1)))
-  ;setf test (mapcar (lambda (x) (multiple-value-setq (quotient remainder) (floor remainder x)) quotient)
-  ;                   coins)
-  ;(cons (1- (car test)) (make-best-change-denom ((- cents (
-
-;;;(defun get-best (cur best)
-;;;  (let ((cur-temp (apply '+ cur)) (best-temp (apply '+ (car best))))
-;;;    (cond ((< remainder (cdr best)) (cons cur remainder))
-;;;          ((= remainder (cdr best)) (cond ((< cur-temp best-temp) cur)
-;;;                                          (t best)))
-;;;          (t best))))
 
 (defun sparse-to-dense (best coins)
   (do ((zeros-needed  (- (length coins) (length best)))
