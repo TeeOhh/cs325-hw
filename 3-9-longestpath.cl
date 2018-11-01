@@ -12,22 +12,22 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun longest-path (start end net)
-  (let ((longest (reverse (dfs start end net (list start) (cdr (assoc start net)) '()))))
-    (if (and (null longest) (eql start end))
-      (list start)
-      longest)))
+  (let ((initial-longest (if (string= start end) (list start) '())))
+    (reverse (dfs end net (list start) (cdr (assoc start net)) initial-longest))))
 
-(defun dfs (start end net path neighbors longest-tracker)
+(defun dfs (end net path neighbors longest-tracker)
   (if (null neighbors) longest-tracker
-    (dfs start end net path (rest neighbors)
+    (dfs end net path (rest neighbors)
          (get-longest (car neighbors) end path net longest-tracker))))
 
 (defun get-longest (node end path net longest-tracker)
   (let ((new-path (cons node path)))
-    (cond ((string= node end) (if (> (length new-path) (length longest-tracker))
-                                new-path longest-tracker))
+    (cond ((string= node end) (get-longer new-path longest-tracker))
           ((member node path) longest-tracker)
-          (t (dfs node end net new-path (cdr (assoc node net)) longest-tracker)))))
+          (t (dfs end net new-path (cdr (assoc node net)) longest-tracker)))))
+
+(defun get-longer (list1 list2)
+  (if (> (length list1) (length list2)) list1 list2))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
