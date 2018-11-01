@@ -12,10 +12,13 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun horner (num &rest numbers)
-  (cond ((eql (length numbers) 1) (* (first numbers) num))
-        ((null numbers) 0)
-        (t (+ (* (first numbers) num) (second numbers))))
+  (do ((numbers-tracker numbers (cons (compute num (first numbers-tracker)
+                                               (second numbers-tracker))
+                                      (cdr (cdr numbers-tracker)))))
+      ((null (cdr numbers-tracker)) (car numbers-tracker))))
 
+(defun horner-computer (num coef1 coef2)
+  (+ (* coef1 num) coef2))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
