@@ -12,13 +12,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun horner (num &rest numbers)
-  (do ((numbers-tracker numbers (cons (compute num (first numbers-tracker)
-                                               (second numbers-tracker))
-                                      (cdr (cdr numbers-tracker)))))
-      ((null (cdr numbers-tracker)) (car numbers-tracker))))
-
-(defun horner-computer (num coef1 coef2)
-  (+ (* coef1 num) coef2))
+  (reduce (lambda (x y) (+ (* num x) y)) numbers))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
