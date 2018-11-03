@@ -31,15 +31,28 @@
 
 ;recursive passing structure
 ;get quotient, remainder of (floor cents (car coins))
-;pass to something else with with cents = (cents - (coin * (quotient - 1))), coins = (rest coins)
+;pass back to self with quotient-1 coins = (rest coins)
+;pass to something else with quotient and coins = (rest coins)
 
-(defun no-pennies (cents past-coins coins shortest-tracker)
+(defun no-pennies (cents coins &optional past-quotient)
+  (let ((quotient) (remainder))
+    (multiple-value-setq (quotient remainder) (floor cents (car coins)))
+    (cond ((null (cdr coins)) remainder) ;and coins amount
+          (t (get-least (no-pennies remainder (rest coins) quotient)
+                        (no-pennies-helper remainder coins quotient))))))
+
+(defun no-pennies-helper (remainder coins past-quotient)
+  (cond ((eql past-quotient 0) remainder)
+        (t (get-least (no-pennies-helper (+ remainder (car coins)) coins (1- past-quotient))
+                      (no-pennies (+ remainder (car coins)) (rest coins) (1- past-quotient))))))
+
+(defun get-least (remainder1 remainder2)
   ;case1 remainder = least-remainder
   ;  check if cur-coins < least-coins
   ;case2 remainder < least-remainder
   ;  set least-coins = cur-coins
   ;case 3 remainder > least-coins (else)
-  ;  recall something
+  (if (< remainder1 remainder2) remainder1 remainder2)
   )
 
 
