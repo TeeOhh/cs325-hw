@@ -52,8 +52,7 @@
   ;case2 remainder < least-remainder
   ;  set least-coins = cur-coins
   ;case 3 remainder > least-coins (else)
-  (if (< remainder1 remainder2) remainder1 remainder2)
-  )
+  (if (< remainder1 remainder2) remainder1 remainder2))
 
 
 (defun get-best (cur best)
