@@ -12,31 +12,23 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;if last denom is a 1, then can do this, other wise have to check all possibilities
 (defun make-best-change (cents &optional (coins '(25 10 5 1)))
-  ;if last coin is penny
-  ;(pennies cents coins)
-  ;(no-pennies cents coins)
-  )
+  (if (member 1 coins)
+    (pennies cents coins)
+    (no-pennies cents coins)))
 
 (defun no-pennies (cents coins)
   (multiple-value-bind (quotient remainder) (floor cents (car coins))
     (cond ((null (cdr coins)) remainder)
           (t (get-best (no-pennies remainder (rest coins))
-                        (no-pennies-helper remainder coins quotient))))))
+                       (no-pennies-helper remainder coins quotient))))))
 
 (defun no-pennies-helper (remainder coins past-quotient)
   (cond ((eql past-quotient 0) remainder)
         (t (get-best (no-pennies-helper (+ remainder (car coins)) coins (1- past-quotient))
                       (no-pennies (+ remainder (car coins)) (rest coins))))))
 
-(defun get-best (remainder1 remainder2)
-  ;case1 remainder = least-remainder
-  ;  check if cur-coins < least-coins
-  ;case2 remainder < least-remainder
-  ;  set least-coins = cur-coins
-  ;case 3 remainder > least-coins (else)
+(defun get-best (val1 val2)
   (if (< remainder1 remainder2) remainder1 remainder2))
 
 (defun pennies (cents coins)
