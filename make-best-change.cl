@@ -17,18 +17,19 @@
     (pennies cents coins)
     (no-pennies cents coins)))
 
-(defun no-pennies (cents coins)
+(defun no-pennies (cents coins &optional past-quotient)
   (multiple-value-bind (quotient remainder) (floor cents (car coins))
     (cond ((null (cdr coins)) remainder)
-          (t (get-best (no-pennies remainder (rest coins))
+          (t (get-best (no-pennies remainder (rest coins) quotient)
                        (no-pennies-helper remainder coins quotient))))))
 
 (defun no-pennies-helper (remainder coins past-quotient)
-  (cond ((eql past-quotient 0) remainder)
-        (t (get-best (no-pennies-helper (+ remainder (car coins)) coins (1- past-quotient))
-                      (no-pennies (+ remainder (car coins)) (rest coins))))))
-
-(defun get-best (val1 val2)
+  (cond ((= past-quotient 0) remainder)
+        (t (get-best 
+            (no-pennies-helper (+ remainder (car coins)) coins (1- past-quotient))
+            (no-pennies (+ remainder (car coins)) (rest coins) (1- past-quotient))))))
+                                                   
+(defun get-best (remainder1 remainder2)
   (if (< remainder1 remainder2) remainder1 remainder2))
 
 (defun pennies (cents coins)
