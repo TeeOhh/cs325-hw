@@ -18,21 +18,23 @@
     (nstring-downcase (remove #\- (string-capitalize string)) :end 1)))
 
 (defun hyphenate (string &optional (case :upper))
-  (ecase case
-    ((:upper) (string-upcase (with-output-to-string (s) (hyphenate-recur string s))))
-    ((:lower) (string-downcase (with-output-to-string (s) (hyphenate-recur string s))))))
+  (let ((return-string (with-output-to-string (s) (hyphenate-helper string s 0))))
+    (ecase case
+      ((:upper) (string-upcase return-string))
+      ((:lower) (string-downcase return-string)))))
 
-(defun hyphenate-recur (string stream)
-  (let ((cap-position (get-cap-pos string)))
-    (cond ((null string) stream)
-          (cap-position (format stream "~a~a" (subseq string 0 cap-position) "-")
-                        (hyphenate-recur (subseq string cap-position) stream))
-          (t (format stream "~a" string)))))
+(defun hyphenate-helper (string stream last-pos)
+  (let ((cap-pos (get-cap-pos string last-pos)))
+    (cond ((= last-pos (1- (length string))) stream)
+          (cap-pos (write-string string stream :start last-pos :end cap-pos)
+                   (format stream "~a" "-")
+                   (hyphenate-helper string stream cap-pos))
+          (t (write-string string stream :start last-pos)))))
 
-(defun get-cap-pos (string)
-  (let ((cap-position (position-if #'upper-case-p string :start 1)))
+(defun get-cap-pos (string last-pos)
+  (let ((cap-position (position-if #'upper-case-p string :start (1+ last-pos))))
     (cond ((null cap-position) nil)
-          ((= cap-position 1) (position-if #'lower-case-p string))
+          ((= cap-position (1+ last-pos)) (position-if #'lower-case-p string :start (1+ last-pos)))
           (t cap-position))))
 
 

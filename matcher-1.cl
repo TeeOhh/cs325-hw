@@ -1,6 +1,6 @@
 ;;;; -*-  Mode: LISP; Syntax: Common-Lisp; Base: 10                          -*-
 ;;;; ---------------------------------------------------------------------------
-;;;; File name: matcher-2
+;;;; File name: matcher-1
 ;;;;    System: 
 ;;;;    Author: Taylor Olson
 ;;;;   Created: October 8, 2018 09:15:17
@@ -11,7 +11,11 @@
 (in-package #:exmatch)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun ?not (pattern))
 
+(defun ?or (pattern))
+
+(defun ?= (pattern))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
