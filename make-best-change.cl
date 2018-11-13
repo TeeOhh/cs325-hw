@@ -11,26 +11,32 @@
 (in-package :CS325-USER)
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 (defun make-best-change (cents &optional (coins '(25 10 5 1)))
-  (if (member 1 coins)
-    (pennies cents coins)
-    (no-pennies cents coins)))
+  (cond ((member 1 coins) (pennies cents coins))
+        (t (defparameter *current* (make-hash-table))
+           (defparameter *best* (make-hash-table))
+           (no-pennies cents coins)
+           (values-list (mapcar #'(lambda (coin) (gethash coin *best*)) coins)))))
 
-(defun no-pennies (cents coins &optional past-quotient)
+(defun no-pennies (cents coins &optional)
   (multiple-value-bind (quotient remainder) (floor cents (car coins))
-    (cond ((null (cdr coins)) remainder)
-          (t (get-best (no-pennies remainder (rest coins) quotient)
-                       (no-pennies-helper remainder coins quotient))))))
+    (cond ((null (cdr coins)) 
+           (update-tables quotient remainder coins))
+          (t
+           (do* ((quotient-tracker quotient (1- quotient-tracker))
+                (cents-tracker (- cents (* quotient-tracker (car coins))) (- cents (* quotient-tracker (car coins)))))
+               ((= quotient-tracker -1))
+             (setf (gethash (car coins) *current*) quotient-tracker)
+             (no-pennies cents-tracker (rest coins)))))))
 
-(defun no-pennies-helper (remainder coins past-quotient)
-  (cond ((= past-quotient 0) remainder) ;(cons past-quotient (rest past-quotients))
-        (t (get-best 
-            (no-pennies-helper (+ remainder (car coins)) coins (1- past-quotient))
-            (no-pennies (+ remainder (car coins)) (rest coins) (1- past-quotient)))))) 
-                                                   
-(defun get-best (remainder1 remainder2)
-  (if (< remainder1 remainder2) remainder1 remainder2))
+(defun update-tables (quotient remainder coins)
+  (setf (gethash (car coins) *current*) quotient)
+  (setf (gethash 'remainder *current*) remainder)
+  (when (= (hash-table-count *best*) 0)
+    (maphash #'(lambda(key val) (setf (gethash key *best*) val)) *current*))
+  (when (< remainder (gethash 'remainder *best*))
+    (maphash #'(lambda(key val) (setf (gethash key *best*) val)) *current*)))
 
 (defun pennies (cents coins)
   (do* ((remainder cents cents)

@@ -1,21 +1,22 @@
 ;;;; -*-  Mode: LISP; Syntax: Common-Lisp; Base: 10                          -*-
 ;;;; ---------------------------------------------------------------------------
-;;;; File name: matcher-1
+;;;; File name: atomize
 ;;;;    System: 
 ;;;;    Author: Taylor Olson
-;;;;   Created: October 8, 2018 09:15:17
+;;;;   Created: November 12, 2018 09:15:59
 ;;;;   Purpose: 
 ;;;; ---------------------------------------------------------------------------
 
-(in-package :cs325-user)
-(in-package #:exmatch)
+
+(in-package :CS325-USER)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun ?not (x y lsts))
-
-(defun ?or (pattern))
-
-(defun ?= (pattern))
+(defun atomize (string)
+  ;remove leading spaces
+  ;(substitute-if #\space #'(lambda (c) (or (eql #\newline c) (eql #\tab c))) string)
+  ;(intern string) do this to every character in string
+  )
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
