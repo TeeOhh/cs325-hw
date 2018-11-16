@@ -12,29 +12,35 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;make every character a symbol
-;(intern string)
 
 (defun atomize (string)
-  (let ((new-string (remove #\" (strings-to-symbols (string-trim '(#\space) string)))))
-    (with-output-to-string (s)
-      (loop for char across new-string
-          do (write-string (character-transform char) s)))))
+  (let ((new-string (pre-process string))
+        (result '())
+        (stream (make-string-output-stream)))
+    (loop for char across new-string
+        do (if (or (char= #\newline char) (char= #\tab char)
+                   (char= #\space char) (char= #\, char))
+             (let ((cur-string (get-output-stream-string stream)))
+               (unless (string= "" cur-string)
+                 (push (symbolize cur-string) result)))
+            (write-char char stream)))
+    (push (symbolize (get-output-stream-string stream)) result)
+    (reverse result)))
+  
+(defun symbolize (string)
+  (if (ignore-errors (numberp (read-from-string string)))
+    (parse-integer string)
+    (intern (string-upcase string))))
 
-;if eql newline, tab, or space
-;   if string, (cons string list) then reset string buffer
-;else (write-string (intern (string (char-downcase char))))
+(defun pre-process (string)
+  (remove #\" (handle-proper-nouns (string-trim '(#\space) string) 0)))
 
-(defun character-transform (char)
-  (cond ((or (eql #\newline char) (eql #\tab char)) (string #\space)) ;if string not nil, cons
-        (t (string (char-downcase char)))))
-
-(defun strings-to-symbols(string &optional (start 0) (return-string string))
+(defun handle-proper-nouns (string start &optional (return-string string))
   (let ((quot1 (position #\" string :start start)))
     (if quot1
       (let ((quot2 (position #\" string :start (1+ quot1))))
         (strings-to-symbols string (1+ quot2)
-                            (substitute #\_ #\space string :start quot1 :end quot2)))
+                            (nsubstitute #\_ #\space string :start quot1 :end quot2)))
       return-string)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
