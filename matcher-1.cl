@@ -11,9 +11,13 @@
 (in-package #:exmatch)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun ?not (x y lsts))
+(defun ?not (x y lsts)
+  (cond ((null lsts) lsts)
+        ((null x) lsts)
+        (t (?not (cdr x) y (match-p (car x) y lsts)))))
 
-(defun ?or (pattern))
+(defun ?or (patterns y lsts)
+  (match-p patterns y lsts))
 
 (defun ?= (pattern))
 
