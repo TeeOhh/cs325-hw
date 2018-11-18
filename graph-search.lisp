@@ -37,19 +37,12 @@
 (defun query-search (query &optional (blists (list nil)))
   (cond ((null blists) nil)
         ((member :not query)
-         (get-non-match blists (graph-search (cdr query) blists)))
+         (mapcan #'(lambda (blist)
+                     (unless (graph-search (cdr query) (list blist)) (list blist))) blists))
         (t (mapcan (lambda (triple)
                      (match-query query triple blists))
              *triples*))))
-
-(defun get-non-match (blists not-bindings)    
-  (loop for binding in blists
-      when (null (loop for binding2 in not-bindings
-                  when (match-query (car binding) (car (last binding2)))
-                     collect binding))
-        collect binding))
                                
-
 (defun match-query (query triple &optional (blists (list nil)))
   (cond ((null blists) nil)
         ((null query) blists)
