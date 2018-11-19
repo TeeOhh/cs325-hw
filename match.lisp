@@ -122,6 +122,8 @@ OTHER DEALINGS IN THE SOFTWARE.
   
   (assert-equal '(((?x . 1))) (match-p '(?and (?or (?? < -10) (?? > 0)) ?x) 1))
   )
+(defun square (x) (* x x))
+(defun contains (x y) (and (stringp x) (search y x)))
 
 (define-test match-=
   (assert-equal '(nil) (match-p '(?= 9 square) 3))
@@ -131,9 +133,6 @@ OTHER DEALINGS IN THE SOFTWARE.
   (assert-equal '(((?x . 9))) (match-p '((?= ?x square) ?x) '(3 9)))
   (assert-false (match-p '((?= ?x square) ?x) '(3 6)))
   )
-
-(defun square (x) (* x x))
-(defun contains (x y) (and (stringp x) (search y x)))
 
 
 (define-test match-contains

@@ -15,10 +15,15 @@
   (unless (match-p (car x) y lsts) lsts))
 
 (defun ?or (x y lsts)
-  (cond ((null x) lsts)
-        (t (append lsts (?or (cdr x) y (match-p x y lsts))))))
+  (mapcan (lambda (x-var) (match-p x-var y lsts)) x))
 
-(defun ?= (pattern))
+(defun ?= (sub-pattern form extra)
+  (let* ((pattern (car sub-pattern)) (fn (cadr sub-pattern)) (args (cddr sub-pattern)))
+  (if (null args)
+    (match-p pattern (funcall fn form) extra)
+    (mapcan #'(lambda (arg) (match-p pattern
+                                   (funcall fn form arg)
+                                   extra)) args))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
