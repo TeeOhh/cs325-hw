@@ -10,7 +10,6 @@
 
 (in-package :CS325-USER)
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun atomize (string)
@@ -20,13 +19,14 @@
     (loop for char across new-string
         do (if (or (char= #\newline char) (char= #\tab char)
                    (char= #\space char) (char= #\, char))
-             (let ((cur-string (get-output-stream-string stream)))
-               (unless (string= "" cur-string)
-                 (push (symbolize cur-string) result)))
-            (write-char char stream)))
-    (push (symbolize (get-output-stream-string stream)) result)
-    (reverse result)))
-  
+             (push (cur-token stream) result)
+             (write-char char stream)))
+    (push (cur-token stream) result)
+    (reverse (remove nil result))))
+
+(defun cur-token (stream)
+  (symbolize (get-output-stream-string stream)))
+
 (defun symbolize (string)
   (if (ignore-errors (numberp (read-from-string string)))
     (parse-integer string)
@@ -39,7 +39,7 @@
   (let ((quot1 (position #\" string :start start)))
     (if quot1
       (let ((quot2 (position #\" string :start (1+ quot1))))
-        (strings-to-symbols string (1+ quot2)
+        (handle-proper-nouns string (1+ quot2)
                             (nsubstitute #\_ #\space string :start quot1 :end quot2)))
       return-string)))
 

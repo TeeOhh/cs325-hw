@@ -12,12 +12,11 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun ?not (x y lsts)
-  (cond ((null lsts) lsts)
-        ((null x) lsts)
-        (t (?not (cdr x) y (match-p (car x) y lsts)))))
+  (unless (match-p (car x) y lsts) lsts))
 
-(defun ?or (patterns y lsts)
-  (match-p patterns y lsts))
+(defun ?or (x y lsts)
+  (cond ((null x) lsts)
+        (t (append lsts (?or (cdr x) y (match-p x y lsts))))))
 
 (defun ?= (pattern))
 
