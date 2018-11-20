@@ -1,25 +1,19 @@
 ;;;; -*-  Mode: LISP; Syntax: Common-Lisp; Base: 10                          -*-
 ;;;; ---------------------------------------------------------------------------
-;;;; File name: alldifferent-ddr
+;;;; File name: match-contains
 ;;;;    System: 
-;;;;    Author: 
-;;;;   Created: November 18, 2018 17:01:01
+;;;;    Author: Taylor Olson
+;;;;   Created: November 20, 2018 01:32:45
 ;;;;   Purpose: 
 ;;;; ---------------------------------------------------------------------------
 ;;;;  $LastChangedDate: 2018-09-27 12:08:59 -0500 (Thu, 27 Sep 2018) $
 ;;;;  $LastChangedBy: usher $
 ;;;; ---------------------------------------------------------------------------
-
-(in-package #:ddr-tests)
-
+(in-package #:exmatch)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defparameter *all-different-kb*
-  '((-> (different ?x ?y) (different ?y ?x))
-    (-> (all-different (cons ?x (?y nil))) (different ?x ?y))
-    (-> (all-different (cons ?x (cons ?y ?z)))
-        (different ?x ?y)
-        (all-different (cons ?x ?z))
-        (all-different (cons ?y ?Z)))))
+(defun ?contains (x y lsts)
+  (match-p (car x) y lsts))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code

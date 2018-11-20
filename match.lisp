@@ -137,7 +137,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 (define-test match-contains
   (assert-equal '(((?x . a))) (match-p '(?contains ?x) 'a))
-  (assert-equality set-equal '(((?x . ((a)))) ((?x . (a))) ((?X . a)))
+  (assert-equality set-equal '(((?x . ((a)))) ((?x . (a))) ((?x . a)))
                    (match-p '(?contains ?x) '((a))))
   (assert-equal '(((?x . nil))) (match-p '(?contains ?x) nil))
   (assert-equality set-equal '(((?x . (nil))) ((?x . nil)))
