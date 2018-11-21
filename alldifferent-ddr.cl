@@ -16,7 +16,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defparameter *all-different-kb*
   '((-> (different ?x ?y) (different ?y ?x))
-    (-> (all-different (cons ?x (?y nil))) (different ?x ?y))
     (-> (all-different (cons ?x (cons ?y ?z)))
         (different ?x ?y)
         (all-different (cons ?x ?z))
