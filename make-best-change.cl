@@ -12,35 +12,52 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;; "no-pennies" does the iterating through all combinations and checks it against the best seen
+;; using update-best when it sees the last coin.
+
+;; The last 3 functions are used to separate the logic if there's a penny in coins.
+;; (I still think there's a proof for this, haven't had the time to work through it yet)
+
+
 (defun make-best-change (cents &optional (coins '(25 10 5 1)))
   (cond ((member 1 coins) (pennies cents coins))
-        (t (defparameter *current* (make-hash-table))
-           (defparameter *best* (make-hash-table))
-           (no-pennies cents coins)
-           (values-list (mapcar #'(lambda (coin) (gethash coin *best*)) coins)))))
+        (t (let ((*current* (make-array (1+ (length coins)) :initial-element 0 :fill-pointer 0))
+                 (*best* (make-array (1+ (length coins)) :initial-element 0)))
+             (no-pennies cents coins)
+             (values-list (subseq (coerce *best* 'list) 0 (length coins)))))))
 
 (defun no-pennies (cents coins &optional)
   (multiple-value-bind (quotient remainder) (floor cents (car coins))
-    (cond ((null (cdr coins)) 
-           (update-tables quotient remainder coins))
+    (cond ((null (cdr coins))
+           (vector-push quotient *current*)
+           (vector-push remainder *current*)
+           (update-best remainder))
           (t
            (do* ((quotient-tracker quotient (1- quotient-tracker))
-                (cents-tracker (- cents (* quotient-tracker (car coins))) (- cents (* quotient-tracker (car coins)))))
-               ((= quotient-tracker -1))
-             (setf (gethash (car coins) *current*) quotient-tracker)
-             (no-pennies cents-tracker (rest coins)))))))
+                 (cents-tracker (- cents (* quotient-tracker (car coins)))
+                                (- cents (* quotient-tracker (car coins))))
+                 (fill-pointer (fill-pointer *current*)))
+                ((= quotient-tracker -1))
+             (vector-push quotient-tracker *current*)
+             (no-pennies cents-tracker (rest coins))
+             (setf (fill-pointer *current*) fill-pointer))))))
 
-(defun update-tables (quotient remainder coins)
-  (setf (gethash (car coins) *current*) quotient)
-  (setf (gethash 'remainder *current*) remainder)
-  (when (= (hash-table-count *best*) 0)
-    (maphash #'(lambda(key val) (setf (gethash key *best*) val)) *current*))
-  (when (< remainder (gethash 'remainder *best*))
-    (maphash #'(lambda(key val) (setf (gethash key *best*) val)) *current*)))
+(defun update-best (remainder)
+  (when (= (reduce #'+ *best*) 0) (replace *best* *current*))
+  (when (< remainder (aref *best* (1- (length *best*))))
+         (replace *best* *current*)))
+
+(defun recalculate-cents (cents quotient coin)
+  (- cents (* quotient coin)))
+
+
+
+
 
 (defun pennies (cents coins)
   (do* ((remainder cents cents)
-        (current '() (mapcar (lambda (x) (multiple-value-setq (quotient remainder) (floor remainder x)) quotient)
+        (current '() (mapcar (lambda (x)
+                               (multiple-value-setq (quotient remainder) (floor remainder x)) quotient)
                       new-coins))
         (best-change (list (1+ cents)) (get-best-pennies current best-change))
         (new-coins coins (rest new-coins)))

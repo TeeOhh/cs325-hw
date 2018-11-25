@@ -19,11 +19,7 @@
 
 (defun ?= (sub-pattern form extra)
   (let* ((pattern (car sub-pattern)) (fn (cadr sub-pattern)) (args (cddr sub-pattern)))
-  (if (null args)
-    (match-p pattern (funcall fn form) extra)
-    (mapcan #'(lambda (arg) (match-p pattern
-                                   (funcall fn form arg)
-                                   extra)) args))))
+    (mapcan #'(lambda (arg) (match-p pattern (funcall fn form arg) extra)) args)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

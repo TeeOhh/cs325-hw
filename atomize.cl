@@ -19,13 +19,20 @@
     (loop for char across new-string
         do (if (or (char= #\newline char) (char= #\tab char)
                    (char= #\space char) (char= #\, char))
-             (push (cur-token stream) result)
-             (write-char char stream)))
-    (push (cur-token stream) result)
-    (reverse (remove nil result))))
+             (let ((cur-string (not-empty stream)))
+               (when cur-string
+                 (push cur-string result)))
+            (write-char char stream)))
+    (push (symbolize (get-output-stream-string stream)) result)
+    (reverse result)))
 
 (defun cur-token (stream)
   (symbolize (get-output-stream-string stream)))
+
+(defun not-empty (stream)
+  (let ((cur-string (get-output-stream-string stream)))
+    (unless (string= "" cur-string)
+      (symbolize cur-string))))
 
 (defun symbolize (string)
   (if (ignore-errors (numberp (read-from-string string)))
