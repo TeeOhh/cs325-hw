@@ -43,8 +43,8 @@
 
 (defun new-paths (path end neighbors)
   (mapcan #'(lambda (n)
-              (cond ((not (member n path)) (list (cons n path)))
-                    (t nil)))
+              (cond ((member n path) nil)
+                    (t (list (cons n path)))))
     neighbors))
 
 
