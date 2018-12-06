@@ -1,22 +1,20 @@
 ;;;; -*-  Mode: LISP; Syntax: Common-Lisp; Base: 10                          -*-
 ;;;; ---------------------------------------------------------------------------
-;;;; File name: preservemacro
+;;;; File name: shakey
 ;;;;    System: 
 ;;;;    Author: Taylor Olson
-;;;;   Created: December 2, 2018 16:25:22
+;;;;   Created: November 28, 2018 22:00:22
 ;;;;   Purpose: 
 ;;;; ---------------------------------------------------------------------------
 ;;;;  $LastChangedDate: 2018-09-27 12:08:59 -0500 (Thu, 27 Sep 2018) $
 ;;;;  $LastChangedBy: usher $
 ;;;; ---------------------------------------------------------------------------
 
-(in-package :CS325-USER)
+(in-package #:shakey-tests)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defmacro preserve (vars &body body)
-  `((lambda ,vars ,@body) ,@vars))
+(defparameter *shakey-1-kb* )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
-

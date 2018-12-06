@@ -13,12 +13,10 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun ?contains (x y lsts)
-  (cond ((null x) lsts)
-        ((null y) (match-p (car x) y lsts))
-        ((atom y) (match-p (car x) y lsts))
-        (t (append (?contains (cdr x) y (match-p (car x) y lsts))
-                   (?contains x (car y) lsts)
-                   (?contains x (cdr y) lsts)))))
+  (if (atom y)
+    (match-p (car x) y lsts)
+    (append (mapcan #'(lambda (y-val) (?contains x y-val lsts)) y)
+            (match-p (car x) y lsts))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code

@@ -1,22 +1,32 @@
 ;;;; -*-  Mode: LISP; Syntax: Common-Lisp; Base: 10                          -*-
 ;;;; ---------------------------------------------------------------------------
-;;;; File name: preservemacro
+;;;; File name: has-slot-p
 ;;;;    System: 
-;;;;    Author: Taylor Olson
-;;;;   Created: December 2, 2018 16:25:22
+;;;;    Author: 
+;;;;   Created: December 4, 2018 19:29:19
 ;;;;   Purpose: 
 ;;;; ---------------------------------------------------------------------------
 ;;;;  $LastChangedDate: 2018-09-27 12:08:59 -0500 (Thu, 27 Sep 2018) $
 ;;;;  $LastChangedBy: usher $
 ;;;; ---------------------------------------------------------------------------
 
-(in-package :CS325-USER)
+(in-package #:mop-tests)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defmacro preserve (vars &body body)
-  `((lambda ,vars ,@body) ,@vars))
+(defun has-slots-p (mop slots)
+  (every (lambda (slot) (has-slots-helper (all-absts mop) slot)) slots))
+
+(defun has-slots-helper (mops slot)
+  (if (null mops)
+    nil
+    (let* ((cur-mop (get-mop (car mops))) (filler (find-filler cur-mop slot)))
+      (unless filler (has-slots-helper (cdr mops) slot))
+      ;need to check here if (cdr filler) inherets slot
+      (when (equal (cdr slot) (cdr filler)) t))))
+
+(defun find-filler (mop slot)
+  (assoc (car slot) (cddr mop)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
-

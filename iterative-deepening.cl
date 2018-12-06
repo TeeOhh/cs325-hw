@@ -16,35 +16,39 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun shortest-path (start end net)
   (reverse (ids (list (list start))
-                (let ((x end)) #'(lambda (y) (eql x y)))
-                (let ((paths net)) #'(lambda (path) (cdr (assoc (car path) paths))))
-                end)))
+                (lambda (x) (eql x end))
+                (lambda (path) (cdr (assoc (car path) net))))))
 
-(defun ids (path pred gen)
-  ;while (dls path pred gen n) = nil
-  ;(dls path pred gen (1+ n))
-  ;if extend failure, return no path found
-  (do ((n 0 (1+ n))
-       (result nil (dls path pred gen n)))
-      ((or (eql result 'extend-failure)
-           (member end result)) 
-       (if (eql result 'extend-failure) nil result))))
+(defun ids (paths pred gen)
+  (do* ((n 0 (1+ n))
+        (result (dls (car paths) pred gen n 0) (dls (car paths) pred gen n 0)))
+       ((cheap-test result) result)))
 
 (defun dls (path pred gen n depth)
-  (cond ((null path) nil) ;found a cycle
+  (cond ((null path) nil)
         ((funcall pred (car path)) path)
-        ((= depth n) path) ;depth failure, need to indicate that it didn't find end
+        ((= depth n) 'depth-fail)
         (t (let ((neighbors (funcall gen path)))
              (if (null neighbors)
-               ;extend failure
-               ;need to collect these
-               (loop for neighbor in neighbors
-                   do (dls (build-path neighbor path) pred gen (1+ depth))))))))
+               nil
+               (dls-helper neighbors path pred gen n depth))))))
+
+(defun dls-helper (neighbors path pred gen n depth)
+  (let ((result-path (dls (build-path (car neighbors) path) pred gen n (1+ depth))))
+    (cond ((null (cdr neighbors)) result-path)
+          (t result-path
+             (dls-helper (cdr neighbors) path pred gen n depth)))))
+
+(defun cheap-test (result)
+  (or (null result)
+      (not (eql 'depth-fail result))))
 
 (defun build-path (neighbor path)
   (if (member neighbor path)
     nil
     (cons neighbor path)))
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

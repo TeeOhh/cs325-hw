@@ -12,27 +12,32 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;I refactored into subfunctions but not sure if rebuilding logic to "next-token" function
+;is time well spent. I'd like to spend the last few days on other AI exercises.
+
 (defun atomize (string)
-  (let ((new-string (pre-process string))
-        (result '())
+  (parse-string (pre-process string)))
+
+(defun parse-string (string)
+  (let ((result '())
         (stream (make-string-output-stream)))
-    (loop for char across new-string
-        do (if (or (char= #\newline char) (char= #\tab char)
-                   (char= #\space char) (char= #\, char))
-             (let ((cur-string (not-empty stream)))
-               (when cur-string
-                 (push cur-string result)))
-            (write-char char stream)))
-    (push (symbolize (get-output-stream-string stream)) result)
+    (loop for char across string
+        do (if (space-equiv-p char)
+             (setf result (push-nonempty-token (get-output-stream-string stream) result))
+             (write-char char stream)))
+    (setf result (push-nonempty-token (get-output-stream-string stream) result))
     (reverse result)))
 
-(defun cur-token (stream)
-  (symbolize (get-output-stream-string stream)))
+(defun push-nonempty-token (cur-string result)
+  (if (string= "" cur-string)
+    result
+    (cons (symbolize cur-string) result)))
 
-(defun not-empty (stream)
-  (let ((cur-string (get-output-stream-string stream)))
-    (unless (string= "" cur-string)
-      (symbolize cur-string))))
+(defun space-equiv-p (char)
+  (or (char= #\newline char)
+      (char= #\tab char)
+      (char= #\space char)
+      (char= #\, char)))
 
 (defun symbolize (string)
   (if (ignore-errors (numberp (read-from-string string)))
