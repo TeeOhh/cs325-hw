@@ -15,7 +15,7 @@
   (unless (match-p (car x) y lsts) lsts))
 
 (defun ?or (x y lsts)
-  (when x (append (match-p (car x) y lsts)
+  (and x (append (match-p (car x) y lsts)
                  (?or (cdr x) y lsts))))
 
 (defun ?= (pattern form extra)
