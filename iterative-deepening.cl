@@ -22,26 +22,25 @@
 (defun ids (paths pred gen)
   (do* ((n 0 (1+ n))
         (result (dls (car paths) pred gen n 0) (dls (car paths) pred gen n 0)))
-       ((cheap-test result) result)))
+       ((listp result) result)))
 
 (defun dls (path pred gen n depth)
   (cond ((null path) nil)
-        ((funcall pred (car path)) path)
-        ((= depth n) 'depth-fail)
+        ((= depth n)
+         (if (funcall pred (car path)) path 'depth-fail))
         (t (let ((neighbors (funcall gen path)))
              (if (null neighbors)
                nil
                (dls-helper neighbors path pred gen n depth))))))
 
 (defun dls-helper (neighbors path pred gen n depth)
-  (let ((result-path (dls (build-path (car neighbors) path) pred gen n (1+ depth))))
-    (cond ((null (cdr neighbors)) result-path)
-          (t result-path
-             (dls-helper (cdr neighbors) path pred gen n depth)))))
+  (do ((next-path '() (dls (build-path (car neighbors-tracker) path) pred gen n (1+ depth)))
+       (neighbors-tracker neighbors (rest neighbors-tracker)))
+      ((or (end-found next-path) (null neighbors-tracker)) 
+       next-path)))
 
-(defun cheap-test (result)
-  (or (null result)
-      (not (eql 'depth-fail result))))
+(defun end-found (path)
+  (and (listp path) path))
 
 (defun build-path (neighbor path)
   (if (member neighbor path)
